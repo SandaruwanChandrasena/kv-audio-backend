@@ -4,6 +4,9 @@ import mongoose from "mongoose";
 import userRouter from "./routers/userRouter.js";
 import productRouter from "./routers/productRouter.js";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 
@@ -15,11 +18,9 @@ app.use((req, res, next) => {
   if (token != null) {
     token = token.replace("Bearer ", "");
 
-    jwt.verify(token, "ruwan", (err, decoded) => {
+    jwt.verify(token, jwtSecret, (err, decoded) => {
       if (!err) {
-
         req.user = decoded;
-
       }
     });
   }
@@ -27,10 +28,11 @@ app.use((req, res, next) => {
   next();
 });
 
-const mongoURL =
-  "mongodb+srv://ruwan_test:ruwan123@cluster0.krhc9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const port = process.env.PORT || 3000;
+const mongoUrl = process.env.MONGO_URL;
+const jwtSecret = process.env.JWT_SECRET;
 
-mongoose.connect(mongoURL);
+mongoose.connect(mongoUrl);
 
 const connection = mongoose.connection;
 
@@ -42,6 +44,6 @@ app.use("/api/users", userRouter);
 
 app.use("/api/products", productRouter);
 
-app.listen(3000, () => {
+app.listen(port, () => {
   console.log("Server is running port 3000");
 });
