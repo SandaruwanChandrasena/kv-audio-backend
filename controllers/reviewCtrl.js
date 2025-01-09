@@ -81,7 +81,7 @@ export function deleteReview(req, res) {
         })
         .catch(() => {
           res.status(500).json({
-            message: "your deletion failed",
+            error: "your deletion failed",
           });
         });
     } else {
@@ -89,5 +89,40 @@ export function deleteReview(req, res) {
         message: "Your are not authorized to perform this action",
       });
     }
+  }
+}
+
+export function approveReview(req, res) {
+  const email = req.params.email;
+
+  if (req.user == null) {
+    res.status().json({
+      message: "Please login first and try again",
+    });
+
+    return;
+  }
+
+  if (req.user.role == "admin") {
+    Review.updateOne(
+      {
+        email: email,
+      },
+      {
+        isApproved: true,
+      }
+    ).then(() => {
+      res.json({
+        message: "Review Approved Successfully"
+      })
+    }).catch(() => {
+      res.status(500).json({
+        error: "Review Approved Faield"
+      })
+    })
+  } else {
+    res.status(403).json({
+      message: "Your are not authorized to perform this action",
+    });
   }
 }
