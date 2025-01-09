@@ -1,7 +1,6 @@
 import Review from "../models/review.js";
 
 export function addReview(req, res) {
-
   if (req.user == null) {
     res.status(401).json({
       message: "Please login first and try again",
@@ -31,7 +30,6 @@ export function addReview(req, res) {
 }
 
 export function getReviews(req, res) {
-
   const user = req.body;
 
   if (req.user == null || req.user.role != "admin") {
@@ -39,7 +37,6 @@ export function getReviews(req, res) {
       res.json(reviews);
     });
     return;
-
   } else {
     Review.find().then((reviews) => {
       res.json(reviews);
@@ -58,7 +55,6 @@ export function deleteReview(req, res) {
   }
 
   if (req.user.role == "admin") {
-
     Review.deleteOne({ email: email })
       .then(() => {
         res.json({
@@ -72,11 +68,26 @@ export function deleteReview(req, res) {
         });
       });
 
-      return;
+    return;
   }
 
-
-  if(req.user.role == "customer") {
-    
+  if (req.user.role == "customer") {
+    if (req.user.email == email) {
+      Review.deleteOne({ email: email })
+        .then(() => {
+          res.json({
+            message: "Your review delete Successfully",
+          });
+        })
+        .catch(() => {
+          res.status(500).json({
+            message: "your deletion failed",
+          });
+        });
+    } else {
+      res.status(403).json({
+        message: "Your are not authorized to perform this action",
+      });
+    }
   }
 }
