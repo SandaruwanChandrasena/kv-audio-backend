@@ -24,19 +24,22 @@ export function addReview(req, res) {
       res.json({ message: "Review Added Successfully" });
     })
     .catch((error) => {
-      res.status(500).json({ message: "Review added Fail", error: error.message });
+      res
+        .status(500)
+        .json({ message: "Review added Fail", error: error.message });
     });
 }
 
 export function getReviews(req, res) {
+
   const user = req.body;
 
   if (req.user == null || req.user.role != "admin") {
     Review.find({ isApproved: true }).then((reviews) => {
       res.json(reviews);
     });
-
     return;
+
   } else {
     Review.find().then((reviews) => {
       res.json(reviews);
@@ -45,17 +48,35 @@ export function getReviews(req, res) {
 }
 
 export function deleteReview(req, res) {
-
   const email = req.params.email;
 
-  Review.deleteOne({email: email}).then(() => {
-    res.json({
-      message: "Review deleted Successfully"
-    })
-  }).catch((error)=> {
-    res.status(500).json({
-      message: "Review deletion Failed. Try again",
-      error: error.message
-    })
-  })
+  if (req.user == null) {
+    res.status(401).json({
+      message: "Please login and Try again",
+    });
+    return;
+  }
+
+  if (req.user.role == "admin") {
+
+    Review.deleteOne({ email: email })
+      .then(() => {
+        res.json({
+          message: "Review deleted Successfully",
+        });
+      })
+      .catch((error) => {
+        res.status(500).json({
+          message: "Review deletion Failed. Try again",
+          error: error.message,
+        });
+      });
+
+      return;
+  }
+
+
+  if(req.user.role == "customer") {
+    
+  }
 }
