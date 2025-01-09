@@ -31,6 +31,12 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  profilePicture: {
+    type: String,
+    required: true,
+    default:
+      "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg",
+  },
 });
 
 const User = mongoose.model("users", userSchema);

@@ -1,7 +1,7 @@
 import Product from "../models/product.js";
 
 export function addProduct(req, res) {
-  console.log(req.user);
+  // console.log(req.user);
 
   if (req.user == null) {
     res.status(401).json({
