@@ -43,3 +43,19 @@ export function getReviews(req, res) {
     });
   }
 }
+
+export function deleteReview(req, res) {
+
+  const email = req.params.email;
+
+  Review.deleteOne({email: email}).then(() => {
+    res.json({
+      message: "Review deleted Successfully"
+    })
+  }).catch((error)=> {
+    res.status(500).json({
+      message: "Review deletion Failed. Try again",
+      error: error.message
+    })
+  })
+}

@@ -1,9 +1,10 @@
 import express from "express";
-import { addReview, getReviews } from "../controllers/reviewCtrl.js";
+import { addReview, deleteReview, getReviews } from "../controllers/reviewCtrl.js";
 
 const reviewRouter = express.Router();
 
 reviewRouter.post("/", addReview);
 reviewRouter.get("/", getReviews);
+reviewRouter.delete("/:email", deleteReview);
 
 export default reviewRouter;
