@@ -111,15 +111,17 @@ export function approveReview(req, res) {
       {
         isApproved: true,
       }
-    ).then(() => {
-      res.json({
-        message: "Review Approved Successfully"
+    )
+      .then(() => {
+        res.json({
+          message: "Review Approved Successfully",
+        });
       })
-    }).catch(() => {
-      res.status(500).json({
-        error: "Review Approved Faield"
-      })
-    })
+      .catch(() => {
+        res.status(500).json({
+          error: "Review Approved Faield",
+        });
+      });
   } else {
     res.status(403).json({
       message: "Your are not authorized to perform this action",
