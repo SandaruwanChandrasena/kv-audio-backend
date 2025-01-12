@@ -7,59 +7,72 @@ dotenv.config();
 
 const jwtSecret = process.env.JWT_SECRET;
 
-export function registerUser(req, res) {
-  const userData = req.body;
+export async function registerUser(req, res) {
+  try {
+    const userData = req.body;
 
-  userData.password = bcrypt.hashSync(userData.password, 10);
+    userData.password = await bcrypt.hash(userData.password, 10);
 
-  const newUser = new User(userData);
+    const newUser = new User(userData);
 
-  newUser
-    .save()
-    .then((result) => {
-      res.status(201).json({
-        message: "User Registed Successfully",
-        result: result,
-      });
-    })
-    .catch((error) => {
-      res.status(400).json({
-        message: "User registration error",
-        error: error.message || error,
-      });
+    const result = await newUser.save();
+
+    res.status(201).json({
+      message: "User Registered Successfully",
+      result: result,
     });
+  } catch (error) {
+    res.status(400).json({
+      message: "User Registation error",
+      error: error.message || error,
+    });
+  }
 }
 
-export function loginUser(req, res) {
-  const userData = req.body;
+export async function loginUser(req, res) {
+  try {
+    const userData = req.body;
 
-  User.findOne({ email: userData.email }).then((user) => {
-    if (user == null) {
-      res.status(404).json({
+    // Find the user by email
+    const user = await User.findOne({ email: userData.email });
+
+    if (!user) {
+      // If user is not found, return 404
+      return res.status(404).json({
         error: "User Not Found",
       });
-    } else {
-      const isPasswordCorrect = bcrypt.compareSync(
-        userData.password,
-        user.password
+    }
+
+    // Compare the passwords
+    const isPasswordCorrect = await bcrypt.compare(
+      userData.password,
+      user.password
+    );
+
+    if (isPasswordCorrect) {
+      // Generate JWT token
+      const token = jwt.sign(
+        {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          role: user.role,
+          profilePicture: user.profilePicture,
+        },
+        jwtSecret
       );
 
-      if (isPasswordCorrect) {
-        const token = jwt.sign(
-          {
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            role: user.role,
-            profilePicture: user.profilePicture,
-          },
-          jwtSecret
-        );
-
-        res.json({ message: "Login Successfull", token: token });
-      } else {
-        res.json({ error: "Login Failed" });
-      }
+      // Send success response with token
+      return res.json({ message: "Login Successful", token: token });
+    } else {
+      // If password is incorrect, return error
+      return res.json({ error: "Login Failed" });
     }
-  });
+  } catch (error) {
+    // Handle any unexpected errors
+    return res.status(500).json({
+      error: "An error occurred during login",
+      message: error.message || error,
+    });
+  }
 }
