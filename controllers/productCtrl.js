@@ -68,23 +68,49 @@ export async function updateProduct(req, res) {
 
       await Product.updateOne({ key: key }, data);
 
+      const updateProduct = await Product.findOne({ key: key });
+
       res.json({
         message: "Product is updated Successfully",
+        Product: updateProduct,
       });
 
       return;
-
     } else {
       res.status(403).json({
         message: "You are not authorized to do this activity",
       });
     }
-
   } catch (error) {
     res.json({
+      message: "Faield to update product",
       error: error.message,
     });
   }
 }
 
+export async function deleteProduct(req, res) {
+  try {
+    if (isItAdmin(req)) {
+      const key = req.params.key;
+      
+      const deleteProduct = await Product.findOne({ key: key });
+      await Product.deleteOne({ key: key });
 
+
+      res.json({
+        message: "Product deleted Successfully",
+        Product: deleteProduct,
+      });
+    } else {
+      res.status(403).json({
+        message: "You are not authorized to do this activity",
+      });
+    }
+  } catch (error) {
+    res.json({
+      message: "Faild to delete the product",
+      error: error.message,
+    });
+  }
+}
