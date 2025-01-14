@@ -24,27 +24,47 @@ export function addProduct(req, res) {
     .then((result) => {
       res.json({
         message: "Product added successfully",
-        result: result
+        result: result,
       });
     })
     .catch((error) => {
       res.status(500).json({
         message: "Product adding error",
-        error:error.message
+        error: error.message,
       });
     });
 }
 
-
 export async function getProduct(req, res) {
-  try {
+  let isAdmin = false;
 
-    const products = await Product.find()
-    res.json(products);
+  if (req.user != null) {
+    if (req.user.role == "admin") {
+      isAdmin = true;
+    }
+  }
+
+  try {
+    if (isAdmin) {
+      const products = await Product.find();
+      res.json(products);
+
+      return;
+    } else {
+      const products = await Product.find({
+        availability: true,
+      });
+
+      res.json({
+        products,
+      });
+
+      return;
+    }
     
   } catch (error) {
     res.status(500).json({
-      message: "Faield to get products"
-    })
+      message: "Faield to get products",
+    });
   }
 }
