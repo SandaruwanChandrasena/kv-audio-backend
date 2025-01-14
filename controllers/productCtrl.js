@@ -21,14 +21,30 @@ export function addProduct(req, res) {
 
   product
     .save()
-    .then(() => {
+    .then((result) => {
       res.json({
         message: "Product added successfully",
+        result: result
       });
     })
-    .catch(() => {
+    .catch((error) => {
       res.status(500).json({
         message: "Product adding error",
+        error:error.message
       });
     });
+}
+
+
+export async function getProduct(req, res) {
+  try {
+
+    const products = await Product.find()
+    res.json(products);
+    
+  } catch (error) {
+    res.status(500).json({
+      message: "Faield to get products"
+    })
+  }
 }
