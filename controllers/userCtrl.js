@@ -58,6 +58,7 @@ export async function loginUser(req, res) {
           email: user.email,
           role: user.role,
           profilePicture: user.profilePicture,
+          phone: user.phone,
         },
         jwtSecret
       );

@@ -10,7 +10,6 @@ const inquirySchema = mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
   },
   message: {
     type: String,
@@ -41,4 +40,4 @@ const inquirySchema = mongoose.Schema({
 
 const Inquiry = mongoose.model("inquries", inquirySchema);
 
-export default Inquery;
+export default Inquiry;
