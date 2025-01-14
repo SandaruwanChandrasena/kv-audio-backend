@@ -35,10 +35,10 @@ const productSchema = new mongoose.Schema({
     default: true,
   },
   productImage: {
-    type: String,
+    type: [String],
     required: true,
     default:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiqlHgMZnDsNi2mrQn4Ih_QfDe_k8K29uiuA&s",
+      ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiqlHgMZnDsNi2mrQn4Ih_QfDe_k8K29uiuA&s"],
   },
 });
 
