@@ -4,7 +4,7 @@ const productSchema = new mongoose.Schema({
   key: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   name: {
     type: String,
@@ -14,11 +14,11 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  
+
   category: {
     type: String,
     required: true,
-    default: "uncategorized"
+    default: "uncategorized",
   },
 
   description: {
@@ -26,15 +26,20 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
   dimentions: {
-    type : String,
+    type: String,
     required: true,
   },
   availability: {
     type: Boolean,
     required: true,
-    default: true
-  }
-
+    default: true,
+  },
+  productImage: {
+    type: String,
+    required: true,
+    default:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiqlHgMZnDsNi2mrQn4Ih_QfDe_k8K29uiuA&s",
+  },
 });
 
 const Product = mongoose.model("products", productSchema);
