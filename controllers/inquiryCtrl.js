@@ -65,4 +65,45 @@ export async function getInquiries(req, res) {
   }
 }
 
+export async function deleteInquiry(req, res) {
 
+  try {
+
+    if (isItAdmin(req)) {
+      
+      const id = req.params.id;
+      await Inquiry.deleteOne({ id: id });
+      res.json({ message: "Delete the Inquiry Successfully" });
+      return;
+
+    } else if (isItCustomer) {
+      const id = req.params.id;
+      const inquiry = await Inquiry.findOne({ id: id });
+
+      if (inquiry == null) {
+        res.status(404).json({ message: "Inquriry not Found" });
+        return;
+
+      } else {
+
+        if (inquiry.email == req.user.email) {
+          await Inquiry.deleteOne({ id: id });
+          res.json({ message: "Your Inquiry deleted Successfully" });
+          return;
+
+        } else {
+          res.status(403).json({ message: "Your are not authorized to do it" });
+        }
+      }
+
+    } else {
+      res.status(403).json({ message: "Your are not authorized to do it" });
+    }
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to get Inquiry",
+      error: error.message,
+    });
+  }
+}
