@@ -13,10 +13,10 @@ export async function addInquery(req, res) {
 
       const inquiries = await Inquiry.find().sort({ id: -1 }).limit(1);
 
-      if(inquiries.length == 0) {
-         id = 1;
+      if (inquiries.length == 0) {
+        id = 1;
       } else {
-         id = inquiries[0].id + 1;
+        id = inquiries[0].id + 1;
       }
 
       data.id = id;
@@ -26,46 +26,43 @@ export async function addInquery(req, res) {
       const response = await newInquiry.save();
 
       res.json({
-         message: "Inquiry added Successfully",
-         id: response.id
-      })
-
-
+        message: "Inquiry added Successfully",
+        id: response.id,
+      });
     }
   } catch (error) {
     res.status(500).json({
       message: "Faield to add inquary",
-      error:error.message
+      error: error.message,
     });
   }
 }
 
 export async function getInquiries(req, res) {
-   try{
+  try {
+    if (isItCustomer(req)) {
+      const inquiries = await Inquiry.find({ email: req.user.email });
+      res.json(inquiries);
 
-      if(isItCustomer(req)) {
-         const inquiries = await Inquiry.find({email: req.user.email});
-         res.json(inquiries);
-         
-         return;
+      return;
+    } else if (isItAdmin(req)) {
+      const inquiries = await Inquiry.find();
+      res.json(inquiries);
 
-      } else if (isItAdmin(req)) {
-         const inquiries = await Inquiry.find();
-         res.json(inquiries);
-         
-         return;
-      } else {
-         res.status(403).json({
-            message: "you are not authorized to do this action"
-         })
+      return;
+    } else {
+      res.status(403).json({
+        message: "you are not authorized to do this action",
+      });
 
-         return;
-      }
-
-   } catch(error) {
-      res.status(500).json({
-         message: "Failed to get Inquiry",
-         error: error.message
-      })
-   }
+      return;
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to get Inquiry",
+      error: error.message,
+    });
+  }
 }
+
+
