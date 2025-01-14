@@ -70,7 +70,7 @@ export async function deleteInquiry(req, res) {
   try {
 
     if (isItAdmin(req)) {
-      
+
       const id = req.params.id;
       await Inquiry.deleteOne({ id: id });
       res.json({ message: "Delete the Inquiry Successfully" });
@@ -102,8 +102,59 @@ export async function deleteInquiry(req, res) {
 
   } catch (error) {
     res.status(500).json({
-      message: "Failed to get Inquiry",
+      message: "Failed to delete Inquiry",
       error: error.message,
     });
   }
+}
+
+
+export async function updateInquiry(req, res) {
+   try{
+
+      if(isItAdmin(req)) {
+
+         const id = req.params.id;
+         const data = req.body;
+
+         await Inquiry.updateOne({id: id}, data);
+
+         res.json({message: "Inquiry updated successfully"})
+
+         return;
+
+      } else if(isItCustomer(req)) {
+
+       const id = req.params.id;
+       const data = req.body;
+      const inquiry = await Inquiry.findOne({ id: id });
+
+      if (inquiry == null) {
+        res.status(404).json({ message: "Inquriry not Found" });
+        return;
+
+      } else {
+
+        if (inquiry.email == req.user.email) {
+          await Inquiry.updateOne({ id: id }, {message: data.message});
+          res.json({ message: "Your Inquiry updated Successfully" });
+          return;
+
+        } else {
+          res.status(403).json({ message: "Your are not authorized to do it" });
+        }
+      }
+
+    } else {
+      res.status(403).json({ message: "Your are not authorized to do it" });
+    }
+
+   } catch(error) {
+
+      res.status(500).json({
+         message: "Failed to update Inquiry",
+         error: error.message,
+       });
+
+   }
 }
