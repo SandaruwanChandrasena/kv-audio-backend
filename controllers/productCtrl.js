@@ -1,8 +1,7 @@
 import Product from "../models/product.js";
+import { isItAdmin } from "./userCtrl.js";
 
 export function addProduct(req, res) {
-  // console.log(req.user);
-
   if (req.user == null) {
     res.status(401).json({
       message: "Please login first and try again",
@@ -36,16 +35,8 @@ export function addProduct(req, res) {
 }
 
 export async function getProduct(req, res) {
-  let isAdmin = false;
-
-  if (req.user != null) {
-    if (req.user.role == "admin") {
-      isAdmin = true;
-    }
-  }
-
   try {
-    if (isAdmin) {
+    if (isItAdmin(req)) {
       const products = await Product.find();
       res.json(products);
 
@@ -61,10 +52,39 @@ export async function getProduct(req, res) {
 
       return;
     }
-    
   } catch (error) {
     res.status(500).json({
       message: "Faield to get products",
     });
   }
 }
+
+export async function updateProduct(req, res) {
+  try {
+    if (isItAdmin(req)) {
+      const key = req.params.key;
+
+      const data = req.body;
+
+      await Product.updateOne({ key: key }, data);
+
+      res.json({
+        message: "Product is updated Successfully",
+      });
+
+      return;
+
+    } else {
+      res.status(403).json({
+        message: "You are not authorized to do this activity",
+      });
+    }
+
+  } catch (error) {
+    res.json({
+      error: error.message,
+    });
+  }
+}
+
+
