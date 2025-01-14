@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const inquerySchema = mongoose.Schema({
+const inquirySchema = mongoose.Schema({
   id: {
     type: Number,
     required: true,
@@ -30,9 +30,15 @@ const inquerySchema = mongoose.Schema({
     required: false,
     default: "",
   },
+  isResolve: {
+   type: Boolean,
+   required: true,
+   default: false
+
+  }
 });
 
 
-const Inquery = mongoose.model("inqueries", inquerySchema);
+const Inquiry = mongoose.model("inquries", inquirySchema);
 
 export default Inquery;
