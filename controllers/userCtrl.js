@@ -64,7 +64,7 @@ export async function loginUser(req, res) {
       );
 
       // Send success response with token
-      return res.json({ message: "Login Successful", token: token });
+      return res.json({ message: "Login Successful", token: token,  user: user});
     } else {
       // If password is incorrect, return error
       return res.json({ error: "Login Failed" });
