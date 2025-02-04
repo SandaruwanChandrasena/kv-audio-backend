@@ -29,6 +29,55 @@ export async function registerUser(req, res) {
   }
 }
 
+// export async function loginUser(req, res) {
+//   try {
+//     const userData = req.body;
+
+//     // Find the user by email
+//     const user = await User.findOne({ email: userData.email });
+
+//     if (!user) {
+//       // If user is not found, return 404
+//       return res.status(404).json({
+//         error: "User Not Found",
+//       });
+//     }
+
+//     // Compare the passwords
+//     const isPasswordCorrect = await bcrypt.compare(
+//       userData.password,
+//       user.password
+//     );
+
+//     if (isPasswordCorrect) {
+//       // Generate JWT token
+//       const token = jwt.sign(
+//         {
+//           firstName: user.firstName,
+//           lastName: user.lastName,
+//           email: user.email,
+//           role: user.role,
+//           profilePicture: user.profilePicture,
+//           phone: user.phone,
+//         },
+//         jwtSecret
+//       );
+
+//       // Send success response with token
+//       return res.json({ message: "Login Successful", token: token,  user: user});
+//     } else {
+//       // If password is incorrect, return error
+//       return res.json({ error: "Login Failed" });
+//     }
+//   } catch (error) {
+//     // Handle any unexpected errors
+//     return res.status(500).json({
+//       error: "An error occurred during login",
+//       message: error.message || error,
+//     });
+//   }
+// }
+
 export async function loginUser(req, res) {
   try {
     const userData = req.body;
@@ -39,6 +88,7 @@ export async function loginUser(req, res) {
     if (!user) {
       // If user is not found, return 404
       return res.status(404).json({
+        success: false,
         error: "User Not Found",
       });
     }
@@ -49,34 +99,44 @@ export async function loginUser(req, res) {
       user.password
     );
 
-    if (isPasswordCorrect) {
-      // Generate JWT token
-      const token = jwt.sign(
-        {
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          role: user.role,
-          profilePicture: user.profilePicture,
-          phone: user.phone,
-        },
-        jwtSecret
-      );
-
-      // Send success response with token
-      return res.json({ message: "Login Successful", token: token,  user: user});
-    } else {
-      // If password is incorrect, return error
-      return res.json({ error: "Login Failed" });
+    if (!isPasswordCorrect) {
+      // ❌ Incorrect password, return 401
+      return res.status(401).json({
+        success: false,
+        error: "Invalid Password",
+      });
     }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role,
+        profilePicture: user.profilePicture,
+        phone: user.phone,
+      },
+      process.env.JWT_SECRET
+    );
+
+    // Send success response with token
+    return res.status(200).json({
+      success: true,
+      message: "Login Successful",
+      token: token,
+      user: user,
+    });
   } catch (error) {
     // Handle any unexpected errors
     return res.status(500).json({
+      success: false,
       error: "An error occurred during login",
       message: error.message || error,
     });
   }
 }
+
 
 export function isItAdmin(req) {
   let isAdmin = false;
