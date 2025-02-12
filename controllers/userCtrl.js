@@ -117,7 +117,7 @@ export async function loginUser(req, res) {
         profilePicture: user.profilePicture,
         phone: user.phone,
       },
-      process.env.JWT_SECRET
+      jwtSecret
     );
 
     // Send success response with token
@@ -125,7 +125,7 @@ export async function loginUser(req, res) {
       success: true,
       message: "Login Successful",
       token: token,
-      user: user,
+      role: user.role,
     });
   } catch (error) {
     // Handle any unexpected errors
