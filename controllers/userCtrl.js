@@ -125,7 +125,7 @@ export async function loginUser(req, res) {
       success: true,
       message: "Login Successful",
       token: token,
-      role: user.role,
+      user: user,
     });
   } catch (error) {
     // Handle any unexpected errors
