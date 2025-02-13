@@ -41,6 +41,7 @@ export async function getProduct(req, res) {
       res.json(products);
 
       return;
+      
     } else {
       const products = await Product.find({
         availability: true,
